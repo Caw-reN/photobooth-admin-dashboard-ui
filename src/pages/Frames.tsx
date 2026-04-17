@@ -1,18 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { Upload, Image as ImageIcon, Plus, Trash2, Check, Settings2, Wand2, Loader2 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
+import { frameApi, STORAGE_URL } from '../services/frameApi';
 
-const initialFrames = [
-  { id: 1, name: 'Classic Strip', resolution: '1200x1800', active: true, image: 'https://picsum.photos/seed/frame1/300/450' },
-  { id: 2, name: 'Polaroid Single', resolution: '1080x1080', active: true, image: 'https://picsum.photos/seed/frame2/300/300' },
-  { id: 3, name: 'Neon Party', resolution: '1200x1800', active: false, image: 'https://picsum.photos/seed/frame3/300/450' },
-];
 
 export default function Frames() {
-  const [frames, setFrames] = useState(initialFrames);
+  const [frames, setFrames] = useState<any[]>([]);
   const [selectedFrame, setSelectedFrame] = useState<typeof initialFrames[0] | null>(null);
   
-  // Coordinate Mapper State
   interface PhotoArea {
     id: string;
     x: number;
@@ -25,6 +20,32 @@ export default function Frames() {
   const [interaction, setInteraction] = useState<{ type: string, startX: number, startY: number, startArea: PhotoArea, areaId: string } | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [rawFile, setRawFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const fetchFrames = async () => {
+      try {
+        const responseData = await frameApi.getAll();
+
+        const dataDariAPI = responseData.data.map((item: any) => ({
+          id: item.id,
+          name: item.id,
+          resolution: 'Original',
+          active: item.is_active,
+          image: STORAGE_URL + item.image_path,
+          coordinates: item.coordinates
+        }));
+        setFrames(dataDariAPI);
+      } catch (error) {
+        console.error("Gagal mengambil data dari API", error);
+      }
+    };
+    fetchFrames();
+  }, []);
+
+
+
 
   useEffect(() => {
     if (!interaction) return;
@@ -133,7 +154,6 @@ export default function Frames() {
         img.src = selectedFrame.image;
       });
 
-      // Scale down image for faster processing
       const scale = Math.min(150 / img.width, 150 / img.height);
       const w = Math.floor(img.width * scale);
       const h = Math.floor(img.height * scale);
@@ -156,7 +176,6 @@ export default function Frames() {
         const g = imgData[i+1];
         const b = imgData[i+2];
         const a = imgData[i+3];
-        // Detect transparent OR very close to white (for mockups)
         return a < 50 || (r > 240 && g > 240 && b > 240);
       };
 
@@ -168,7 +187,6 @@ export default function Frames() {
             visited[y * w + x] = 1;
             let areaPixels = 0;
 
-            // Flood fill to find connected transparent/white region
             while (queue.length > 0) {
               const [cx, cy] = queue.shift()!;
               areaPixels++;
@@ -192,8 +210,6 @@ export default function Frames() {
             const boundingBoxArea = (maxX - minX + 1) * (maxY - minY + 1);
             const rectangularity = areaPixels / boundingBoxArea;
             
-            // Must be at least 2% of total image area and reasonably rectangular
-            // (Filters out small white clouds or irregular shapes)
             if (boundingBoxArea > (w * h * 0.02) && rectangularity > 0.6) {
               newAreas.push({
                 id: Math.random().toString(36).substr(2, 9),
@@ -210,7 +226,6 @@ export default function Frames() {
       }
 
       if (newAreas.length > 0) {
-        // Sort areas top-to-bottom
         newAreas.sort((a, b) => a.y - b.y);
         setPhotoAreas(newAreas);
         setSelectedAreaId(newAreas[0].id);
@@ -226,33 +241,41 @@ export default function Frames() {
   };
 
   const onDrop = (acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) return;
+console.log("File yang di-drop:", acceptedFiles); 
+
+    if (acceptedFiles.length === 0) {
+      alert("Format tidak didukung! Pastikan file adalah PNG.");
+      return;
+    }
     
     const file = acceptedFiles[0];
+    setRawFile(file); 
+
     const reader = new FileReader();
-    
     reader.onload = (e) => {
       if (e.target?.result) {
         const dataUrl = e.target.result as string;
         
         const img = new Image();
         img.onload = () => {
+          const tempId = "temp_" + Date.now(); 
           const newFrame = {
-            id: Date.now(),
-            name: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
+            id: tempId,
+            name: file.name.replace(/\.[^/.]+$/, ""),
             resolution: `${img.width}x${img.height}`,
             active: true,
-            image: dataUrl,
-            isDraft: true
+            image: dataUrl, 
+            coordinates: []
           };
           
-          setSelectedFrame(newFrame as any);
-          setPhotoAreas([]); // Reset areas for new frame
+          setFrames(prev => [newFrame, ...prev]);
+          setSelectedFrame(newFrame);
+          setPhotoAreas([{ id: '1', x: 10, y: 10, width: 80, height: 60 }]); // Default 1 area
+          setSelectedAreaId('1');
         };
         img.src = dataUrl;
       }
     };
-    
     reader.readAsDataURL(file);
   };
 
@@ -272,6 +295,67 @@ export default function Frames() {
     if (selectedFrame?.id === id) {
       setSelectedFrame(null);
       setPhotoAreas([]);
+    }
+  };
+
+  const handleSaveFrame = async () => {
+    if (!selectedFrame) {
+      alert("Pilih frame dulu dari daftar sebelah kiri!");
+      return;
+    }
+    
+    if (String(selectedFrame.id).startsWith("temp_") && !rawFile) {
+      alert("Error: File gambar fisik hilang. Silakan refresh dan upload ulang file PNG.");
+      return;
+    }
+
+    if (photoAreas.length === 0) {
+      alert("Silakan tambahkan minimal 1 kotak Photo Area terlebih dahulu.");
+      return;
+    }
+
+    setIsSaving(true); 
+
+    const formData = new FormData();
+    formData.append('name', selectedFrame.name);
+    formData.append('coordinates', JSON.stringify(photoAreas)); 
+    formData.append('is_active', selectedFrame.active ? '1' : '0');
+    
+    if (rawFile) {
+      formData.append('image', rawFile);
+      console.log("File siap dikirim:", rawFile.name); 
+    }
+
+    console.log("=== ISI FORMDATA SEBELUM DIKIRIM ===");
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]); 
+    }
+    console.log("====================================");
+
+    // 5. Tembak API via Service yang tadi kita buat
+    try {
+      const responseData = await frameApi.create(formData);
+      
+      alert("Mantap! Data berhasil disimpan ke database!");
+      
+      const savedData = responseData.data;
+      const newFrameData = {
+        id: savedData.id,
+        name: savedData.name,
+        active: savedData.is_active,
+        image: STORAGE_URL + savedData.image_path,
+        coordinates: savedData.coordinates
+      };
+
+      setFrames(prev => prev.map(f => f.id === selectedFrame.id ? newFrameData : f));
+      setSelectedFrame(newFrameData);
+      setRawFile(null); 
+
+    } catch (error: any) {
+      console.error("Gagal menyimpan:", error.response || error);
+      alert("Gagal menyimpan data ke server. Cek console log.");
+    } finally {
+      setIsSaving(false); // Matikan efek loading
     }
   };
 
@@ -348,18 +432,16 @@ export default function Frames() {
             <div className="card-neo p-6 relative">
               <div className="flex justify-end mb-4">
                 <button 
-                  onClick={() => {
-                    if ((selectedFrame as any).isDraft) {
-                      setFrames(prev => [{...selectedFrame, isDraft: false}, ...prev]);
-                      setSelectedFrame({...selectedFrame, isDraft: false});
-                    }
-                    /* Optional: Show success toast */
-                    alert('Coordinates and Frame Saved!');
-                  }}
-                  className="bg-yellow-300 hover:bg-yellow-400 text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0D2A4A] hover:shadow-[4px_4px_0px_0px_#0D2A4A] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none px-6 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 transition-all shrink-0 justify-center"
+                  onClick={handleSaveFrame}
+                  disabled={isSaving}
+                  className="bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-indigo-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
                 >
-                  <Check className="w-5 h-5" strokeWidth={3} />
-                  Save Coordinates
+                  {isSaving ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4" />
+                  )}
+                  {isSaving ? 'Menyimpan...' : 'Simpan ke Database'}
                 </button>
               </div>
 
