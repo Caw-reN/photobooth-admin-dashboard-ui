@@ -295,7 +295,7 @@ export default function Frames() {
             }`}
           >
             <input {...getInputProps()} />
-            <div className="w-12 h-12 bg-[#FFE8A1] rounded-xl flex items-center justify-center text-slate-900 mx-auto mb-4 border-2 border-slate-900 neo-tag rotate-3">
+            <div className="w-12 h-12 bg-yellow-300 rounded-xl flex items-center justify-center text-slate-900 mx-auto mb-4 border-2 border-slate-900 neo-tag rotate-3">
               <Upload className="w-6 h-6" strokeWidth={2.5} />
             </div>
             <p className="text-sm font-bold text-slate-900">Click to upload or drag and drop</p>
@@ -304,17 +304,17 @@ export default function Frames() {
 
           {/* Frame List */}
           <div className="card-neo overflow-hidden">
-            <div className="p-4 border-b-2 border-slate-900 bg-[#C8F0EE] font-bold text-slate-900">
+            <div className="p-4 border-b-2 border-slate-900 bg-yellow-300 font-bold text-slate-900">
               Available Frames
             </div>
             <div className="divide-y-2 divide-slate-900">
               {frames.map((frame) => (
                 <div 
                   key={frame.id} 
-                  className={`p-4 flex items-center gap-4 cursor-pointer transition-colors ${selectedFrame?.id === frame.id ? 'bg-[#FFE8A1]' : 'hover:bg-slate-50'}`}
+                  className={`p-4 flex items-center gap-4 cursor-pointer transition-colors ${selectedFrame?.id === frame.id ? 'bg-yellow-300' : 'hover:bg-slate-50'}`}
                   onClick={() => setSelectedFrame(frame)}
                 >
-                  <div className="w-16 h-16 bg-white rounded-xl overflow-hidden flex-shrink-0 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a]">
+                  <div className="w-16 h-16 bg-white rounded-xl overflow-hidden flex-shrink-0 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0D2A4A]">
                     <img src={frame.image} alt={frame.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -356,7 +356,7 @@ export default function Frames() {
                     /* Optional: Show success toast */
                     alert('Coordinates and Frame Saved!');
                   }}
-                  className="bg-yellow-300 hover:bg-yellow-400 text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a] hover:shadow-[4px_4px_0px_0px_#0f172a] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none px-6 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 transition-all shrink-0 justify-center"
+                  className="bg-yellow-300 hover:bg-yellow-400 text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0D2A4A] hover:shadow-[4px_4px_0px_0px_#0D2A4A] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none px-6 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 transition-all shrink-0 justify-center"
                 >
                   <Check className="w-5 h-5" strokeWidth={3} />
                   Save Coordinates
@@ -376,7 +376,7 @@ export default function Frames() {
                         setFrames(frames.map(f => f.id === selectedFrame.id ? { ...f, name: newName } : f));
                       }
                     }}
-                    className="text-2xl font-black text-slate-900 bg-white border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a] focus:shadow-[4px_4px_0px_0px_#0f172a] rounded-xl px-4 py-3 w-full focus:outline-none transition-all placeholder:text-slate-400"
+                    className="text-2xl font-black text-slate-900 bg-white border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0D2A4A] focus:shadow-[4px_4px_0px_0px_#0D2A4A] rounded-xl px-4 py-3 w-full focus:outline-none transition-all placeholder:text-slate-400"
                     placeholder="Enter frame name..."
                   />
                   <p className="text-sm font-bold text-slate-600 mt-4 leading-relaxed">Adjust the transparent windows and map them to their corresponding photo area. These coordinates will be used when capturing.</p>
@@ -468,7 +468,7 @@ export default function Frames() {
 
                 {/* Controls */}
                 <div className="space-y-6">
-                  <div className="bg-[#FFE8A1] p-4 rounded-[24px] border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0f172a]">
+                  <div className="bg-yellow-300 p-4 rounded-[24px] border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0D2A4A]">
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
                         <Settings2 className="w-5 h-5 text-slate-900" strokeWidth={2.5} />
@@ -498,7 +498,7 @@ export default function Frames() {
                         return (
                           <div 
                             key={area.id} 
-                            className={`p-3 rounded-2xl border-2 transition-all cursor-pointer ${isSelected ? 'bg-white border-slate-900 shadow-[4px_4px_0px_0px_#0f172a]' : 'bg-slate-50 border-slate-900 shadow-[2px_2px_0px_0px_#0f172a] hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#0f172a]'}`}
+                            className={`p-3 rounded-2xl border-2 transition-all cursor-pointer ${isSelected ? 'bg-white border-slate-900 shadow-[4px_4px_0px_0px_#0D2A4A]' : 'bg-slate-50 border-slate-900 shadow-[2px_2px_0px_0px_#0D2A4A] hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#0D2A4A]'}`}
                             onClick={() => setSelectedAreaId(area.id)}
                           >
                             <div className="flex items-center justify-between mb-2">
@@ -507,7 +507,7 @@ export default function Frames() {
                               </span>
                               <button 
                                 onClick={(e) => removeArea(area.id, e)}
-                                className="text-slate-900 hover:text-white hover:bg-rose-500 bg-rose-100 border-2 border-slate-900 transition-colors p-1.5 rounded-lg shadow-[2px_2px_0px_0px_#0f172a] hover:shadow-[0px_0px_0px_0px_#0f172a] hover:translate-y-[2px] hover:translate-x-[2px]"
+                                className="text-slate-900 hover:text-white hover:bg-rose-500 bg-rose-100 border-2 border-slate-900 transition-colors p-1.5 rounded-lg shadow-[2px_2px_0px_0px_#0D2A4A] hover:shadow-[0px_0px_0px_0px_#0D2A4A] hover:translate-y-[2px] hover:translate-x-[2px]"
                                 title="Remove Area"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -562,7 +562,7 @@ export default function Frames() {
                     </div>
                   </div>
 
-                  <div className="bg-[#FDA4AF] p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0f172a]">
+                  <div className="bg-orange-50 p-4 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0D2A4A]">
                     <h4 className="text-sm font-extrabold text-slate-900 mb-2">Preview Simulation</h4>
                     <p className="text-xs text-slate-900 font-semibold mb-4">This is how the final photo will look with a sample webcam capture.</p>
                     <div className="bg-slate-100 rounded-xl overflow-hidden relative w-full border border-slate-300 shadow-inner flex justify-center py-4">
@@ -594,7 +594,7 @@ export default function Frames() {
             </div>
           ) : (
             <div className="card-neo bg-orange-50 p-12 flex flex-col items-center justify-center text-center h-full min-h-[400px]">
-              <div className="w-16 h-16 bg-[#FFE8A1] rounded-2xl flex items-center justify-center text-slate-900 mb-4 border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0f172a] -rotate-6">
+              <div className="w-16 h-16 bg-yellow-300 rounded-2xl flex items-center justify-center text-slate-900 mb-4 border-2 border-slate-900 shadow-[4px_4px_0px_0px_#0D2A4A] -rotate-6">
                 <ImageIcon className="w-8 h-8" strokeWidth={2.5} />
               </div>
               <h3 className="text-xl font-extrabold text-slate-900 mt-2">No Frame Selected</h3>
