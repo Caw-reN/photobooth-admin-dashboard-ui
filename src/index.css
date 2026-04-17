@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --shadow-sm: 3px 3px 0px 0px rgba(15, 23, 42, 1);
+  --shadow-md: 5px 5px 0px 0px rgba(15, 23, 42, 1);
+  --shadow-lg: 8px 8px 0px 0px rgba(15, 23, 42, 1);
+  
+  /* Make all default borders thicker and black for Neobrutalism */
+  /* We will use explicit border classes in the TSX files for precision */
+}
+
+@layer base {
+  body {
+    @apply bg-orange-50 text-slate-900;
+  }
+  
+  /* Style all scrollbars for a playful look */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-orange-50 border-l-2 border-slate-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-900 rounded-full border-2 border-orange-50;
+  }
+}
+
+@layer utilities {
+  .btn-neo {
+    @apply font-bold border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all;
+  }
+  .card-neo {
+    @apply bg-white border-2 border-slate-900 shadow-[5px_5px_0px_0px_rgba(15,23,42,1)] rounded-2xl;
+  }
+  .input-neo {
+    @apply border-2 border-slate-900 bg-white rounded-xl focus:outline-none focus:ring-0 focus:border-slate-900 focus:shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] transition-all;
+  }
+  .neo-tag {
+    @apply border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] font-bold;
+  }
+}
