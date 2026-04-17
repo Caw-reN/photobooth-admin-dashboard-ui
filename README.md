@@ -51,4 +51,38 @@ Pastikan Anda sudah menginstal Node.js di sistem Anda.
 
 1. **Clone repositori ini:**
    ```bash
-   git clone [https://github.com/Caw-reN/photobooth-admin-dashboard-ui.git](https://github.com/Caw-ren/photobooth-admin-dashboard-ui.git)
+   git clone https://github.com/Caw-reN/photobooth-admin-dashboard-ui.git
+
+
+2. **Clone repositori ini:**
+   ```bash
+   cd photobooth-admin-dashboard-ui
+
+3. **Install dependensi:**
+   ```bash
+   npm install
+   # atau menggunakan yarn / pnpm
+   yarn install
+
+4. **Jalankan development server:**
+   ```bash
+   npm run dev
+
+5. **Buka di Browser:** Kunjungi http://localhost:5173 (atau port yang disediakan oleh Vite) di browser Anda.
+
+
+## 📂 Struktur Folder 
+
+```bash
+   src/
+   ├── pages/
+   │   ├── Home.tsx         # Dashboard Overview
+   │   ├── Frames.tsx       # Manajemen Frame & Mapping Area
+   │   ├── Gallery.tsx      # Galeri Foto & Monitor SSD
+   │   ├── Transactions.tsx # Log Transaksi & Webhook
+   │   └── Settings.tsx     # Konfigurasi Hardware & Payment
+   ├── App.tsx              # Konfigurasi Routing & Layout Sidebar
+   ├── index.css            # Setup Tailwind & Custom CSS Neobrutalism
+   └── main.tsx             # Entry point React
+
+   
